@@ -158,7 +158,7 @@ export default class SimpleBar {
       // Calculate content size
       this.hideNativeScrollbar();
       this.render();
-  
+
       this.initListeners();
     }
   }
@@ -281,8 +281,8 @@ export default class SimpleBar {
     this.trackYSize = this.trackY[this.sizeAttr['y']];
 
     // Set isEnabled to false if scrollbar is not necessary (content is shorter than wrapper)
-    this.isEnabled['x'] = this.trackXSize < this.contentSizeX;
-    this.isEnabled['y'] = this.trackYSize < this.contentSizeY;
+    this.isEnabled['x'] = this.contentEl.clientWidth < this.contentSizeX;
+    this.isEnabled['y'] = this.contentEl.clientHeight < this.contentSizeY;
 
     this.resizeScrollbar('x');
     this.resizeScrollbar('y');
@@ -300,6 +300,7 @@ export default class SimpleBar {
   resizeScrollbar(axis = 'y') {
     let scrollbar;
     let contentSize;
+    let contentClientSize;
     let trackSize;
 
     if (!this.isEnabled[axis] && !this.options.forceVisible) {
@@ -308,16 +309,18 @@ export default class SimpleBar {
 
     if (axis === 'x') {
       scrollbar = this.scrollbarX;
+      contentClientSize = this.contentEl.clientWidth;
       contentSize = this.contentSizeX;
       trackSize = this.trackXSize;
     } else {
       // 'y'
       scrollbar = this.scrollbarY;
+      contentClientSize = this.contentEl.clientHeight;
       contentSize = this.contentSizeY;
       trackSize = this.trackYSize;
     }
 
-    let scrollbarRatio = trackSize / contentSize;
+    let scrollbarRatio = contentClientSize / contentSize;
 
     // Calculate new height/position of drag handle.
     this.handleSize = Math.max(
@@ -325,7 +328,10 @@ export default class SimpleBar {
       this.options.scrollbarMinSize
     );
 
+
     if (this.options.scrollbarMaxSize) {
+      console.log(handleSize);
+      console.log(this.options.scrollbarMaxSize);
       this.handleSize = Math.min(
         this.handleSize,
         this.options.scrollbarMaxSize
@@ -343,23 +349,26 @@ export default class SimpleBar {
     let scrollbar;
     let scrollOffset;
     let contentSize;
+    let contentClientSize;
     let trackSize;
 
     if (axis === 'x') {
       scrollbar = this.scrollbarX;
       scrollOffset = this.contentEl[this.scrollOffsetAttr[axis]]; // Either scrollTop() or scrollLeft().
       contentSize = this.contentSizeX;
+      contentClientSize = this.contentEl.clientWidth;
       trackSize = this.trackXSize;
     } else {
       // 'y'
       scrollbar = this.scrollbarY;
       scrollOffset = this.scrollContentEl[this.scrollOffsetAttr[axis]]; // Either scrollTop() or scrollLeft().
       contentSize = this.contentSizeY;
+      contentClientSize = this.contentEl.clientHeight;
       trackSize = this.trackYSize;
     }
 
-    let scrollPourcent = scrollOffset / (contentSize - trackSize);
-    let handleOffset = ~~((trackSize - this.handleSize) * scrollPourcent);
+    let scrollRatio = scrollOffset / (contentSize - contentClientSize);
+    let handleOffset = ~~((trackSize - this.handleSize) * scrollRatio);
 
     if (this.isEnabled[axis] || this.options.forceVisible) {
       if (axis === 'x') {
