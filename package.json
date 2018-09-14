@@ -1,4 +1,8 @@
 {
+  "name": "simplebar",
+  "version": "3.0.0-beta.4",
+  "description": "Custom scrollbars vanilla javascript library with native scroll, done simple, lightweight, easy to use and cross-browser",
+  "main": "packages/simplebar/dist/simplebar.js",
   "private": true,
   "workspaces": [
     "packages/*"
